@@ -23,9 +23,6 @@ class MinisterioApp {
         document.getElementById('itemForm').addEventListener('submit', (e) => this.handleSubmit(e));
         document.getElementById('searchInput').addEventListener('input', (e) => this.handleSearch(e.target.value));
         document.getElementById('localidadFilter').addEventListener('change', (e) => this.handleLocalidadFilter(e.target.value));
-        document.getElementById('exportData').addEventListener('click', () => this.exportData());
-        document.getElementById('importData').addEventListener('click', () => this.importData());
-        document.getElementById('fileInput').addEventListener('change', (e) => this.handleFileImport(e));
         
         window.addEventListener('click', (e) => {
             if (e.target === document.getElementById('modal')) {
@@ -479,52 +476,6 @@ class MinisterioApp {
             return grupo ? grupo.hermanos.filter(id => id !== hermanoId) : [];
         }
         return [];
-    }
-
-    exportData() {
-        const data = {
-            hermanos: this.hermanos,
-            familias: this.familias,
-            grupos: this.grupos,
-            exportDate: new Date().toISOString()
-        };
-        
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `ministerio-data-${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
-
-    importData() {
-        document.getElementById('fileInput').click();
-    }
-
-    handleFileImport(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = JSON.parse(e.target.result);
-                if (data.hermanos && data.familias && data.grupos) {
-                    this.hermanos = data.hermanos;
-                    this.familias = data.familias;
-                    this.grupos = data.grupos;
-                    this.saveData();
-                    this.render();
-                    alert('Datos importados correctamente');
-                } else {
-                    alert('Archivo no válido');
-                }
-            } catch (error) {
-                alert('Error al leer el archivo');
-            }
-        };
-        reader.readAsText(file);
     }
 
     saveData() {
