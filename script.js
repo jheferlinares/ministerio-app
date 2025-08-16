@@ -1,14 +1,24 @@
 class MinisterioApp {
     constructor() {
-        this.hermanos = JSON.parse(localStorage.getItem('hermanos')) || [];
-        this.familias = JSON.parse(localStorage.getItem('familias')) || [];
-        this.grupos = JSON.parse(localStorage.getItem('grupos')) || [];
+        this.hermanos = [];
+        this.familias = [];
+        this.grupos = [];
         this.currentEditItem = null;
         this.currentEditType = null;
         this.searchTerm = '';
         this.localidadFilter = '';
+        this.database = null;
         
+        this.waitForFirebase();
+    }
+
+    async waitForFirebase() {
+        while (!window.database) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        this.database = window.database;
         this.init();
+        this.loadData();
     }
 
     init() {
@@ -72,7 +82,7 @@ class MinisterioApp {
         this.currentEditType = null;
     }
 
-    handleSubmit(e) {
+    async handleSubmit(e) {
         e.preventDefault();
         const name = document.getElementById('itemName').value.trim();
         const localidad = document.getElementById('localidadSelect').value;
@@ -88,7 +98,7 @@ class MinisterioApp {
         
         this.closeModal();
         this.render();
-        this.saveData();
+        await this.saveData();
     }
 
     addItem(type, name, localidad, companeroId) {
@@ -130,7 +140,7 @@ class MinisterioApp {
         }
     }
 
-    deleteItem(id, type) {
+    async deleteItem(id, type) {
         if (confirm('¿Estás seguro de eliminar este elemento?')) {
             if (type === 'hermano') {
                 this.hermanos = this.hermanos.filter(h => h.id !== id);
@@ -142,7 +152,7 @@ class MinisterioApp {
                 this.familias = this.familias.filter(f => f.id !== id);
             }
             this.render();
-            this.saveData();
+            await this.saveData();
         }
     }
 
@@ -379,9 +389,9 @@ class MinisterioApp {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'action-btn delete-btn';
         deleteBtn.textContent = '🗑️';
-        deleteBtn.onclick = (e) => {
+        deleteBtn.onclick = async (e) => {
             e.stopPropagation();
-            this.deleteItem(item.id, type);
+            await this.deleteItem(item.id, type);
         };
         
         actionsDiv.appendChild(editBtn);
@@ -416,7 +426,7 @@ class MinisterioApp {
             column.style.backgroundColor = '';
         });
         
-        column.addEventListener('drop', (e) => {
+        column.addEventListener('drop', async (e) => {
             e.preventDefault();
             column.style.backgroundColor = '';
             
@@ -443,7 +453,7 @@ class MinisterioApp {
                         }
                     }
                     this.render();
-                    this.saveData();
+                    await this.saveData();
                 }
             } else if (itemType === 'hermano') {
                 const hermano = this.hermanos.find(h => h.id === itemId);
@@ -463,7 +473,7 @@ class MinisterioApp {
                         }
                     }
                     this.render();
-                    this.saveData();
+                    await this.saveData();
                 }
             }
         });
@@ -478,10 +488,37 @@ class MinisterioApp {
         return [];
     }
 
-    saveData() {
-        localStorage.setItem('hermanos', JSON.stringify(this.hermanos));
-        localStorage.setItem('familias', JSON.stringify(this.familias));
-        localStorage.setItem('grupos', JSON.stringify(this.grupos));
+    async loadData() {
+        try {
+            const { ref, get } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
+            
+            const snapshot = await get(ref(this.database, '/'));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                this.hermanos = data.hermanos || [];
+                this.familias = data.familias || [];
+                this.grupos = data.grupos || [];
+            }
+            this.render();
+        } catch (error) {
+            console.error('Error loading data:', error);
+            this.render();
+        }
+    }
+
+    async saveData() {
+        try {
+            const { ref, set } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
+            
+            await set(ref(this.database, '/'), {
+                hermanos: this.hermanos,
+                familias: this.familias,
+                grupos: this.grupos,
+                lastUpdate: new Date().toISOString()
+            });
+        } catch (error) {
+            console.error('Error saving data:', error);
+        }
     }
 }
 
