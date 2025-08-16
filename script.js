@@ -7,16 +7,8 @@ class MinisterioApp {
         this.currentEditType = null;
         this.searchTerm = '';
         this.localidadFilter = '';
-        this.database = null;
+        this.binId = '676a8b4bad19ca34f8c8f8a1';
         
-        this.waitForFirebase();
-    }
-
-    async waitForFirebase() {
-        while (!window.database) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-        this.database = window.database;
         this.init();
         this.loadData();
     }
@@ -490,31 +482,38 @@ class MinisterioApp {
 
     async loadData() {
         try {
-            const { ref, get } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${this.binId}/latest`, {
+                headers: {
+                    'X-Master-Key': '$2a$10$8K9wE2nxvU7Gg5Hh3Qq8aeN1Zz2Yy6Xx4Ww0Vv5Tt3Rr7Pp9Oo1Nn'
+                }
+            });
             
-            const snapshot = await get(ref(this.database, '/'));
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                this.hermanos = data.hermanos || [];
-                this.familias = data.familias || [];
-                this.grupos = data.grupos || [];
+            if (response.ok) {
+                const data = await response.json();
+                this.hermanos = data.record.hermanos || [];
+                this.familias = data.record.familias || [];
+                this.grupos = data.record.grupos || [];
             }
-            this.render();
         } catch (error) {
             console.error('Error loading data:', error);
-            this.render();
         }
+        this.render();
     }
 
     async saveData() {
         try {
-            const { ref, set } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
-            
-            await set(ref(this.database, '/'), {
-                hermanos: this.hermanos,
-                familias: this.familias,
-                grupos: this.grupos,
-                lastUpdate: new Date().toISOString()
+            await fetch(`https://api.jsonbin.io/v3/b/${this.binId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': '$2a$10$8K9wE2nxvU7Gg5Hh3Qq8aeN1Zz2Yy6Xx4Ww0Vv5Tt3Rr7Pp9Oo1Nn'
+                },
+                body: JSON.stringify({
+                    hermanos: this.hermanos,
+                    familias: this.familias,
+                    grupos: this.grupos,
+                    lastUpdate: new Date().toISOString()
+                })
             });
         } catch (error) {
             console.error('Error saving data:', error);
