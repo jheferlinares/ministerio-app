@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: ministerio-app
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+databases:
+  - name: ministerio-db
+    databaseName: ministerio_db
+    user: ministerio_user

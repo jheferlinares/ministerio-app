@@ -1,29 +1,31 @@
-# Ministerio App - Configuración MySQL
+# Ministerio App - Gestión de Ministerio
 
-## Requisitos
-- XAMPP o WAMP (Apache + MySQL + PHP)
-- MySQL Workbench
+## Descripción
+Aplicación web para gestionar hermanos ministrantes, familias y compañerismos con base de datos en la nube.
 
-## Configuración
+## Características
+- ✅ Gestión de hermanos ministrantes
+- ✅ Asignación de familias
+- ✅ Sistema de compañerismos (grupos de 2+ hermanos)
+- ✅ Filtros por localidad (Santa cruz, Libertador 1, Palo negro)
+- ✅ Búsqueda en tiempo real
+- ✅ Drag & drop para reasignar familias
+- ✅ Base de datos en la nube (sincronización automática)
 
-### 1. Instalar XAMPP
-- Descargar e instalar XAMPP
-- Iniciar Apache y MySQL desde el panel de control
+## Despliegue en Render
+1. Conectar repositorio de GitHub a Render
+2. Crear PostgreSQL database
+3. Desplegar web service
+4. La app estará disponible en línea
 
-### 2. Crear Base de Datos
-- Abrir MySQL Workbench
-- Conectar a localhost (usuario: root, sin contraseña)
-- Ejecutar el archivo `api/database.sql`
+## Uso Local
+```bash
+npm install
+npm start
+```
 
-### 3. Configurar Proyecto
-- Copiar la carpeta `ministerio-app` a `C:\xampp\htdocs\`
-- Acceder a: `http://localhost/ministerio-app/`
-
-### 4. Verificar Conexión
-- Si hay errores, revisar `api/config.php`
-- Ajustar usuario/contraseña de MySQL si es necesario
-
-## Uso
-- Los datos se guardan automáticamente en MySQL
-- Funciona en múltiples PCs conectadas a la misma red
-- Para acceso externo, configurar port forwarding en el router
+## Tecnologías
+- Frontend: HTML, CSS, JavaScript
+- Backend: Node.js, Express
+- Base de datos: PostgreSQL
+- Hosting: Render
