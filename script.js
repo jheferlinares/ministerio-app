@@ -7,7 +7,7 @@ class MinisterioApp {
         this.currentEditType = null;
         this.searchTerm = '';
         this.localidadFilter = '';
-        this.binId = '676a8b4bad19ca34f8c8f8a1';
+        this.apiUrl = 'api/api.php';
         
         this.init();
         this.loadData();
@@ -482,17 +482,12 @@ class MinisterioApp {
 
     async loadData() {
         try {
-            const response = await fetch(`https://api.jsonbin.io/v3/b/${this.binId}/latest`, {
-                headers: {
-                    'X-Master-Key': '$2a$10$8K9wE2nxvU7Gg5Hh3Qq8aeN1Zz2Yy6Xx4Ww0Vv5Tt3Rr7Pp9Oo1Nn'
-                }
-            });
-            
+            const response = await fetch(this.apiUrl);
             if (response.ok) {
                 const data = await response.json();
-                this.hermanos = data.record.hermanos || [];
-                this.familias = data.record.familias || [];
-                this.grupos = data.record.grupos || [];
+                this.hermanos = data.hermanos || [];
+                this.familias = data.familias || [];
+                this.grupos = data.grupos || [];
             }
         } catch (error) {
             console.error('Error loading data:', error);
@@ -502,17 +497,15 @@ class MinisterioApp {
 
     async saveData() {
         try {
-            await fetch(`https://api.jsonbin.io/v3/b/${this.binId}`, {
-                method: 'PUT',
+            await fetch(this.apiUrl, {
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': '$2a$10$8K9wE2nxvU7Gg5Hh3Qq8aeN1Zz2Yy6Xx4Ww0Vv5Tt3Rr7Pp9Oo1Nn'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     hermanos: this.hermanos,
                     familias: this.familias,
-                    grupos: this.grupos,
-                    lastUpdate: new Date().toISOString()
+                    grupos: this.grupos
                 })
             });
         } catch (error) {
