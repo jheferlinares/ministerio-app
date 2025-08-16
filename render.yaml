@@ -7,8 +7,3 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-
-databases:
-  - name: ministerio-db
-    databaseName: ministerio_db
-    user: ministerio_user

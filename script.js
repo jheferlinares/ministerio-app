@@ -489,20 +489,7 @@ class MinisterioApp {
                 this.familias = data.familias || [];
                 this.grupos = data.grupos || [];
                 
-                // Convertir campos de base de datos
-                this.hermanos = this.hermanos.map(h => ({
-                    id: parseInt(h.id),
-                    name: h.name,
-                    localidad: h.localidad,
-                    grupoId: h.grupo_id ? parseInt(h.grupo_id) : null
-                }));
-                
-                this.familias = this.familias.map(f => ({
-                    id: parseInt(f.id),
-                    name: f.name,
-                    localidad: f.localidad,
-                    hermanoId: f.hermano_id ? parseInt(f.hermano_id) : null
-                }));
+                // MongoDB devuelve los datos directamente
             }
         } catch (error) {
             console.error('Error loading data:', error);

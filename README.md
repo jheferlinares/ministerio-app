@@ -13,10 +13,11 @@ Aplicación web para gestionar hermanos ministrantes, familias y compañerismos 
 - ✅ Base de datos en la nube (sincronización automática)
 
 ## Despliegue en Render
-1. Conectar repositorio de GitHub a Render
-2. Crear PostgreSQL database
-3. Desplegar web service
-4. La app estará disponible en línea
+1. Crear cuenta gratuita en MongoDB Atlas
+2. Obtener connection string de MongoDB
+3. Conectar repositorio a Render
+4. Agregar MONGODB_URI como variable de entorno
+5. Desplegar web service
 
 ## Uso Local
 ```bash
@@ -27,5 +28,5 @@ npm start
 ## Tecnologías
 - Frontend: HTML, CSS, JavaScript
 - Backend: Node.js, Express
-- Base de datos: PostgreSQL
+- Base de datos: MongoDB
 - Hosting: Render
